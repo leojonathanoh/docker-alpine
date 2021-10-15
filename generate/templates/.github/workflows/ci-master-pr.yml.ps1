@@ -91,6 +91,7 @@ $VARIANTS | % {
         echo "::set-output name=VARIANT_TAG_WITH_REF_AND_SHA_SHORT::$VARIANT_TAG_WITH_REF_AND_SHA_SHORT"
 
     - name: Login to docker registry
+      if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
       run: echo "${DOCKERHUB_REGISTRY_PASSWORD}" | docker login -u "${DOCKERHUB_REGISTRY_USER}" --password-stdin
       env:
         DOCKERHUB_REGISTRY_USER: ${{ secrets.DOCKERHUB_REGISTRY_USER }}
