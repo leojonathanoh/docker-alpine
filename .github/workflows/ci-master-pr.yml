@@ -1273,7 +1273,6 @@ jobs:
       if: always()
 
   update-draft-release:
-    # For CalVer releases
     needs: [build-3-12-curl-git-jq-ssh, build-3-12-curl-mysqlclient-openssl, build-3-11-curl-git-jq-ssh, build-3-11-curl-mysqlclient-openssl, build-3-10-curl-git-jq-ssh, build-3-10-curl-mysqlclient-openssl, build-3-9-curl-git-jq-ssh, build-3-9-curl-mysqlclient-openssl, build-3-8-curl-git-jq-ssh, build-3-8-curl-mysqlclient-openssl]
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
@@ -1294,7 +1293,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish-draft-release:
-    # For CalVer releases
     needs: [build-3-12-curl-git-jq-ssh, build-3-12-curl-mysqlclient-openssl, build-3-11-curl-git-jq-ssh, build-3-11-curl-mysqlclient-openssl, build-3-10-curl-git-jq-ssh, build-3-10-curl-mysqlclient-openssl, build-3-9-curl-git-jq-ssh, build-3-9-curl-mysqlclient-openssl, build-3-8-curl-git-jq-ssh, build-3-8-curl-mysqlclient-openssl]
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
@@ -1305,8 +1303,5 @@ jobs:
         with:
           config-name: release-drafter.yml
           publish: true
-          # For CalVer releases
-          name: ${{ needs.resolve-release-tag.outputs.TAG }}
-          tag: ${{ needs.resolve-release-tag.outputs.TAG }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

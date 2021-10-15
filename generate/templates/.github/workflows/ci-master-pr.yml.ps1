@@ -166,7 +166,6 @@ if ( $_['tag_as_latest'] ) {
 
 
   update-draft-release:
-    # For CalVer releases
     needs: [$( $local:WORKFLOW_JOB_NAMES -join ', ' )]
 "@
 @'
@@ -194,7 +193,6 @@ if ( $_['tag_as_latest'] ) {
 
 
   publish-draft-release:
-    # For CalVer releases
     needs: [$( $local:WORKFLOW_JOB_NAMES -join ', ' )]
 "@
 @'
@@ -208,9 +206,6 @@ if ( $_['tag_as_latest'] ) {
         with:
           config-name: release-drafter.yml
           publish: true
-          # For CalVer releases
-          name: ${{ needs.resolve-release-tag.outputs.TAG }}
-          tag: ${{ needs.resolve-release-tag.outputs.TAG }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
