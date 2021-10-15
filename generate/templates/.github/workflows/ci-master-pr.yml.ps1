@@ -174,7 +174,6 @@ if ( $_['tag_as_latest'] ) {
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        run: echo ${{ needs.resolve-release-tag.outputs.TAG }}
       # Drafts your next Release notes as Pull Requests are merged into "master"
       - uses: release-drafter/release-drafter@v5
         with:
