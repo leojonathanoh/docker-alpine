@@ -5,7 +5,8 @@ on:
   push:
     branches:
     - master
-    - release # For Generate-DockerImageVariants: For CalVer releases. Each push to 'release' branch is a time-based release.
+    tags:
+    - '**'
   pull_request:
     branches:
     - master
@@ -21,7 +22,6 @@ $VARIANTS | % {
     runs-on: ubuntu-latest
     env:
       VARIANT_TAG: $( $_['tag'] )
-      # VARIANT_TAG_WITH_REF: $( $_['tag'] )-`${GITHUB_REF}
       VARIANT_BUILD_DIR: $( $_['build_dir_rel'] )
 "@
 @'
@@ -70,11 +70,12 @@ $VARIANTS | % {
         # CI_PROJECT_NAMESPACE=$( echo "${{ github.repository }}" | cut -d '/' -f 1 )
         # CI_PROJECT_NAME=$( echo "${{ github.repository }}" | cut -d '/' -f 2 )
 
-        # Get 'ref-name' from 'refs/heads/ref-name'
+        # Get 'ref-name' from 'refs/heads/ref-name'. E.g. 'master'
         REF=$( echo "${GITHUB_REF}" | rev | cut -d '/' -f 1 | rev )
+        # Get commit hash E.g. 'b29758a'
         SHA_SHORT=$( echo "${GITHUB_SHA}" | cut -c1-7 )
 
-        # For Generate-DockerImageVariants: Generate the final tags. E.g. 'master-v1.0.0-alpine' and 'master-b29758a-v1.0.0-alpine'
+        # Generate the final tags. E.g. 'master-v1.0.0-alpine' and 'master-b29758a-v1.0.0-alpine'
         VARIANT_TAG_WITH_REF="${REF}-${VARIANT_TAG}"
         VARIANT_TAG_WITH_REF_AND_SHA_SHORT="${REF}-${SHA_SHORT}-${VARIANT_TAG}"
 
@@ -84,8 +85,6 @@ $VARIANTS | % {
         # echo "::set-output name=REF::$REF"
         # echo "::set-output name=SHA_SHORT::$SHA_SHORT"
         # echo "::set-output name=REF_AND_SHA_SHORT::$REF_AND_SHA_SHORT"
-
-        # For Generate-DockerImageVariants: Set step output(s)
         echo "::set-output name=CONTEXT::$VARIANT_BUILD_DIR"
         echo "::set-output name=VARIANT_TAG::$VARIANT_TAG"
         echo "::set-output name=VARIANT_TAG_WITH_REF::$VARIANT_TAG_WITH_REF"
@@ -131,9 +130,7 @@ $VARIANTS | % {
 
     - name: Build and push (release)
       id: docker_build_release
-      # For Generate-DockerImageVariants: For CalVer releases. Each push to 'release' branch is a time-based release.
-      # if: startsWith(github.ref, 'refs/tags/')
-      if: github.ref == 'refs/heads/release'
+      if: startsWith(github.ref, 'refs/tags/')
       uses: docker/build-push-action@v2
       with:
         context: `${{ steps.prep.outputs.CONTEXT }}
@@ -165,29 +162,10 @@ if ( $_['tag_as_latest'] ) {
 '@
 }
 
-@"
-
-
-  # For Generate-DockerImageVariants: For CalVer releases. Each push to 'release' branch is a time-based release.
-  converge-master-and-release-branches:
-    needs: [$( $local:WORKFLOW_JOB_NAMES -join ', ' )]
-    if: github.ref == 'refs/heads/release'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Merge release into master (fast-forward)
-        run: |
-          git checkout master
-          git merge release
-          git push origin master
-"@
-
 @'
 
 
-  # For Generate-DockerImageVariants: For CalVer releases. Each push to 'release' branch is a time-based release.
+  # For CalVer releases
   resolve-release-tag:
     runs-on: ubuntu-latest
     outputs:
@@ -228,7 +206,8 @@ if ( $_['tag_as_latest'] ) {
 
 
   update-draft-release:
-    needs: [$( $local:WORKFLOW_JOB_NAMES -join ', ' ), resolve-release-tag]
+    # For CalVer releases
+    needs: [resolve-release-tag, $( $local:WORKFLOW_JOB_NAMES -join ', ' )]
 "@
 @'
 
@@ -255,13 +234,12 @@ if ( $_['tag_as_latest'] ) {
 
 
   publish-draft-release:
-    needs: [$( $local:WORKFLOW_JOB_NAMES -join ', ' ), converge-master-and-release-branches, resolve-release-tag]
+    # For CalVer releases
+    needs: [resolve-release-tag, $( $local:WORKFLOW_JOB_NAMES -join ', ' )]
 "@
 @'
 
-    # For Generate-DockerImageVariants: For CalVer releases. Each push to 'release' branch is a time-based release.
-    # if: startsWith(github.ref, 'refs/tags/')
-    if: github.ref == 'refs/heads/release'
+    if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -270,6 +248,7 @@ if ( $_['tag_as_latest'] ) {
         with:
           config-name: release-drafter.yml
           publish: true
+          # For CalVer releases
           name: ${{ needs.resolve-release-tag.outputs.TAG }}
           tag: ${{ needs.resolve-release-tag.outputs.TAG }}
         env:

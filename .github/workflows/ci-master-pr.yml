@@ -4,7 +4,8 @@ on:
   push:
     branches:
     - master
-    - release # For Generate-DockerImageVariants: For CalVer releases. Each push to 'release' branch is a time-based release.
+    tags:
+    - '**'
   pull_request:
     branches:
     - master
@@ -14,7 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VARIANT_TAG: 3.12-curl-git-jq-ssh
-      # VARIANT_TAG_WITH_REF: 3.12-curl-git-jq-ssh-${GITHUB_REF}
       VARIANT_BUILD_DIR: variants/3.12-curl-git-jq-ssh
     steps:
     - name: Checkout
@@ -60,11 +60,12 @@ jobs:
         # CI_PROJECT_NAMESPACE=$( echo "${{ github.repository }}" | cut -d '/' -f 1 )
         # CI_PROJECT_NAME=$( echo "${{ github.repository }}" | cut -d '/' -f 2 )
 
-        # Get 'ref-name' from 'refs/heads/ref-name'
+        # Get 'ref-name' from 'refs/heads/ref-name'. E.g. 'master'
         REF=$( echo "${GITHUB_REF}" | rev | cut -d '/' -f 1 | rev )
+        # Get commit hash E.g. 'b29758a'
         SHA_SHORT=$( echo "${GITHUB_SHA}" | cut -c1-7 )
 
-        # For Generate-DockerImageVariants: Generate the final tags. E.g. 'master-v1.0.0-alpine' and 'master-b29758a-v1.0.0-alpine'
+        # Generate the final tags. E.g. 'master-v1.0.0-alpine' and 'master-b29758a-v1.0.0-alpine'
         VARIANT_TAG_WITH_REF="${REF}-${VARIANT_TAG}"
         VARIANT_TAG_WITH_REF_AND_SHA_SHORT="${REF}-${SHA_SHORT}-${VARIANT_TAG}"
 
@@ -74,8 +75,6 @@ jobs:
         # echo "::set-output name=REF::$REF"
         # echo "::set-output name=SHA_SHORT::$SHA_SHORT"
         # echo "::set-output name=REF_AND_SHA_SHORT::$REF_AND_SHA_SHORT"
-
-        # For Generate-DockerImageVariants: Set step output(s)
         echo "::set-output name=CONTEXT::$VARIANT_BUILD_DIR"
         echo "::set-output name=VARIANT_TAG::$VARIANT_TAG"
         echo "::set-output name=VARIANT_TAG_WITH_REF::$VARIANT_TAG_WITH_REF"
@@ -118,9 +117,7 @@ jobs:
 
     - name: Build and push (release)
       id: docker_build_release
-      # For Generate-DockerImageVariants: For CalVer releases. Each push to 'release' branch is a time-based release.
-      # if: startsWith(github.ref, 'refs/tags/')
-      if: github.ref == 'refs/heads/release'
+      if: startsWith(github.ref, 'refs/tags/')
       uses: docker/build-push-action@v2
       with:
         context: ${{ steps.prep.outputs.CONTEXT }}
@@ -145,7 +142,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VARIANT_TAG: 3.12-curl-mysqlclient-openssl
-      # VARIANT_TAG_WITH_REF: 3.12-curl-mysqlclient-openssl-${GITHUB_REF}
       VARIANT_BUILD_DIR: variants/3.12-curl-mysqlclient-openssl
     steps:
     - name: Checkout
@@ -191,11 +187,12 @@ jobs:
         # CI_PROJECT_NAMESPACE=$( echo "${{ github.repository }}" | cut -d '/' -f 1 )
         # CI_PROJECT_NAME=$( echo "${{ github.repository }}" | cut -d '/' -f 2 )
 
-        # Get 'ref-name' from 'refs/heads/ref-name'
+        # Get 'ref-name' from 'refs/heads/ref-name'. E.g. 'master'
         REF=$( echo "${GITHUB_REF}" | rev | cut -d '/' -f 1 | rev )
+        # Get commit hash E.g. 'b29758a'
         SHA_SHORT=$( echo "${GITHUB_SHA}" | cut -c1-7 )
 
-        # For Generate-DockerImageVariants: Generate the final tags. E.g. 'master-v1.0.0-alpine' and 'master-b29758a-v1.0.0-alpine'
+        # Generate the final tags. E.g. 'master-v1.0.0-alpine' and 'master-b29758a-v1.0.0-alpine'
         VARIANT_TAG_WITH_REF="${REF}-${VARIANT_TAG}"
         VARIANT_TAG_WITH_REF_AND_SHA_SHORT="${REF}-${SHA_SHORT}-${VARIANT_TAG}"
 
@@ -205,8 +202,6 @@ jobs:
         # echo "::set-output name=REF::$REF"
         # echo "::set-output name=SHA_SHORT::$SHA_SHORT"
         # echo "::set-output name=REF_AND_SHA_SHORT::$REF_AND_SHA_SHORT"
-
-        # For Generate-DockerImageVariants: Set step output(s)
         echo "::set-output name=CONTEXT::$VARIANT_BUILD_DIR"
         echo "::set-output name=VARIANT_TAG::$VARIANT_TAG"
         echo "::set-output name=VARIANT_TAG_WITH_REF::$VARIANT_TAG_WITH_REF"
@@ -249,9 +244,7 @@ jobs:
 
     - name: Build and push (release)
       id: docker_build_release
-      # For Generate-DockerImageVariants: For CalVer releases. Each push to 'release' branch is a time-based release.
-      # if: startsWith(github.ref, 'refs/tags/')
-      if: github.ref == 'refs/heads/release'
+      if: startsWith(github.ref, 'refs/tags/')
       uses: docker/build-push-action@v2
       with:
         context: ${{ steps.prep.outputs.CONTEXT }}
@@ -275,7 +268,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VARIANT_TAG: 3.11-curl-git-jq-ssh
-      # VARIANT_TAG_WITH_REF: 3.11-curl-git-jq-ssh-${GITHUB_REF}
       VARIANT_BUILD_DIR: variants/3.11-curl-git-jq-ssh
     steps:
     - name: Checkout
@@ -321,11 +313,12 @@ jobs:
         # CI_PROJECT_NAMESPACE=$( echo "${{ github.repository }}" | cut -d '/' -f 1 )
         # CI_PROJECT_NAME=$( echo "${{ github.repository }}" | cut -d '/' -f 2 )
 
-        # Get 'ref-name' from 'refs/heads/ref-name'
+        # Get 'ref-name' from 'refs/heads/ref-name'. E.g. 'master'
         REF=$( echo "${GITHUB_REF}" | rev | cut -d '/' -f 1 | rev )
+        # Get commit hash E.g. 'b29758a'
         SHA_SHORT=$( echo "${GITHUB_SHA}" | cut -c1-7 )
 
-        # For Generate-DockerImageVariants: Generate the final tags. E.g. 'master-v1.0.0-alpine' and 'master-b29758a-v1.0.0-alpine'
+        # Generate the final tags. E.g. 'master-v1.0.0-alpine' and 'master-b29758a-v1.0.0-alpine'
         VARIANT_TAG_WITH_REF="${REF}-${VARIANT_TAG}"
         VARIANT_TAG_WITH_REF_AND_SHA_SHORT="${REF}-${SHA_SHORT}-${VARIANT_TAG}"
 
@@ -335,8 +328,6 @@ jobs:
         # echo "::set-output name=REF::$REF"
         # echo "::set-output name=SHA_SHORT::$SHA_SHORT"
         # echo "::set-output name=REF_AND_SHA_SHORT::$REF_AND_SHA_SHORT"
-
-        # For Generate-DockerImageVariants: Set step output(s)
         echo "::set-output name=CONTEXT::$VARIANT_BUILD_DIR"
         echo "::set-output name=VARIANT_TAG::$VARIANT_TAG"
         echo "::set-output name=VARIANT_TAG_WITH_REF::$VARIANT_TAG_WITH_REF"
@@ -379,9 +370,7 @@ jobs:
 
     - name: Build and push (release)
       id: docker_build_release
-      # For Generate-DockerImageVariants: For CalVer releases. Each push to 'release' branch is a time-based release.
-      # if: startsWith(github.ref, 'refs/tags/')
-      if: github.ref == 'refs/heads/release'
+      if: startsWith(github.ref, 'refs/tags/')
       uses: docker/build-push-action@v2
       with:
         context: ${{ steps.prep.outputs.CONTEXT }}
@@ -405,7 +394,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VARIANT_TAG: 3.11-curl-mysqlclient-openssl
-      # VARIANT_TAG_WITH_REF: 3.11-curl-mysqlclient-openssl-${GITHUB_REF}
       VARIANT_BUILD_DIR: variants/3.11-curl-mysqlclient-openssl
     steps:
     - name: Checkout
@@ -451,11 +439,12 @@ jobs:
         # CI_PROJECT_NAMESPACE=$( echo "${{ github.repository }}" | cut -d '/' -f 1 )
         # CI_PROJECT_NAME=$( echo "${{ github.repository }}" | cut -d '/' -f 2 )
 
-        # Get 'ref-name' from 'refs/heads/ref-name'
+        # Get 'ref-name' from 'refs/heads/ref-name'. E.g. 'master'
         REF=$( echo "${GITHUB_REF}" | rev | cut -d '/' -f 1 | rev )
+        # Get commit hash E.g. 'b29758a'
         SHA_SHORT=$( echo "${GITHUB_SHA}" | cut -c1-7 )
 
-        # For Generate-DockerImageVariants: Generate the final tags. E.g. 'master-v1.0.0-alpine' and 'master-b29758a-v1.0.0-alpine'
+        # Generate the final tags. E.g. 'master-v1.0.0-alpine' and 'master-b29758a-v1.0.0-alpine'
         VARIANT_TAG_WITH_REF="${REF}-${VARIANT_TAG}"
         VARIANT_TAG_WITH_REF_AND_SHA_SHORT="${REF}-${SHA_SHORT}-${VARIANT_TAG}"
 
@@ -465,8 +454,6 @@ jobs:
         # echo "::set-output name=REF::$REF"
         # echo "::set-output name=SHA_SHORT::$SHA_SHORT"
         # echo "::set-output name=REF_AND_SHA_SHORT::$REF_AND_SHA_SHORT"
-
-        # For Generate-DockerImageVariants: Set step output(s)
         echo "::set-output name=CONTEXT::$VARIANT_BUILD_DIR"
         echo "::set-output name=VARIANT_TAG::$VARIANT_TAG"
         echo "::set-output name=VARIANT_TAG_WITH_REF::$VARIANT_TAG_WITH_REF"
@@ -509,9 +496,7 @@ jobs:
 
     - name: Build and push (release)
       id: docker_build_release
-      # For Generate-DockerImageVariants: For CalVer releases. Each push to 'release' branch is a time-based release.
-      # if: startsWith(github.ref, 'refs/tags/')
-      if: github.ref == 'refs/heads/release'
+      if: startsWith(github.ref, 'refs/tags/')
       uses: docker/build-push-action@v2
       with:
         context: ${{ steps.prep.outputs.CONTEXT }}
@@ -535,7 +520,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VARIANT_TAG: 3.10-curl-git-jq-ssh
-      # VARIANT_TAG_WITH_REF: 3.10-curl-git-jq-ssh-${GITHUB_REF}
       VARIANT_BUILD_DIR: variants/3.10-curl-git-jq-ssh
     steps:
     - name: Checkout
@@ -581,11 +565,12 @@ jobs:
         # CI_PROJECT_NAMESPACE=$( echo "${{ github.repository }}" | cut -d '/' -f 1 )
         # CI_PROJECT_NAME=$( echo "${{ github.repository }}" | cut -d '/' -f 2 )
 
-        # Get 'ref-name' from 'refs/heads/ref-name'
+        # Get 'ref-name' from 'refs/heads/ref-name'. E.g. 'master'
         REF=$( echo "${GITHUB_REF}" | rev | cut -d '/' -f 1 | rev )
+        # Get commit hash E.g. 'b29758a'
         SHA_SHORT=$( echo "${GITHUB_SHA}" | cut -c1-7 )
 
-        # For Generate-DockerImageVariants: Generate the final tags. E.g. 'master-v1.0.0-alpine' and 'master-b29758a-v1.0.0-alpine'
+        # Generate the final tags. E.g. 'master-v1.0.0-alpine' and 'master-b29758a-v1.0.0-alpine'
         VARIANT_TAG_WITH_REF="${REF}-${VARIANT_TAG}"
         VARIANT_TAG_WITH_REF_AND_SHA_SHORT="${REF}-${SHA_SHORT}-${VARIANT_TAG}"
 
@@ -595,8 +580,6 @@ jobs:
         # echo "::set-output name=REF::$REF"
         # echo "::set-output name=SHA_SHORT::$SHA_SHORT"
         # echo "::set-output name=REF_AND_SHA_SHORT::$REF_AND_SHA_SHORT"
-
-        # For Generate-DockerImageVariants: Set step output(s)
         echo "::set-output name=CONTEXT::$VARIANT_BUILD_DIR"
         echo "::set-output name=VARIANT_TAG::$VARIANT_TAG"
         echo "::set-output name=VARIANT_TAG_WITH_REF::$VARIANT_TAG_WITH_REF"
@@ -639,9 +622,7 @@ jobs:
 
     - name: Build and push (release)
       id: docker_build_release
-      # For Generate-DockerImageVariants: For CalVer releases. Each push to 'release' branch is a time-based release.
-      # if: startsWith(github.ref, 'refs/tags/')
-      if: github.ref == 'refs/heads/release'
+      if: startsWith(github.ref, 'refs/tags/')
       uses: docker/build-push-action@v2
       with:
         context: ${{ steps.prep.outputs.CONTEXT }}
@@ -665,7 +646,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VARIANT_TAG: 3.10-curl-mysqlclient-openssl
-      # VARIANT_TAG_WITH_REF: 3.10-curl-mysqlclient-openssl-${GITHUB_REF}
       VARIANT_BUILD_DIR: variants/3.10-curl-mysqlclient-openssl
     steps:
     - name: Checkout
@@ -711,11 +691,12 @@ jobs:
         # CI_PROJECT_NAMESPACE=$( echo "${{ github.repository }}" | cut -d '/' -f 1 )
         # CI_PROJECT_NAME=$( echo "${{ github.repository }}" | cut -d '/' -f 2 )
 
-        # Get 'ref-name' from 'refs/heads/ref-name'
+        # Get 'ref-name' from 'refs/heads/ref-name'. E.g. 'master'
         REF=$( echo "${GITHUB_REF}" | rev | cut -d '/' -f 1 | rev )
+        # Get commit hash E.g. 'b29758a'
         SHA_SHORT=$( echo "${GITHUB_SHA}" | cut -c1-7 )
 
-        # For Generate-DockerImageVariants: Generate the final tags. E.g. 'master-v1.0.0-alpine' and 'master-b29758a-v1.0.0-alpine'
+        # Generate the final tags. E.g. 'master-v1.0.0-alpine' and 'master-b29758a-v1.0.0-alpine'
         VARIANT_TAG_WITH_REF="${REF}-${VARIANT_TAG}"
         VARIANT_TAG_WITH_REF_AND_SHA_SHORT="${REF}-${SHA_SHORT}-${VARIANT_TAG}"
 
@@ -725,8 +706,6 @@ jobs:
         # echo "::set-output name=REF::$REF"
         # echo "::set-output name=SHA_SHORT::$SHA_SHORT"
         # echo "::set-output name=REF_AND_SHA_SHORT::$REF_AND_SHA_SHORT"
-
-        # For Generate-DockerImageVariants: Set step output(s)
         echo "::set-output name=CONTEXT::$VARIANT_BUILD_DIR"
         echo "::set-output name=VARIANT_TAG::$VARIANT_TAG"
         echo "::set-output name=VARIANT_TAG_WITH_REF::$VARIANT_TAG_WITH_REF"
@@ -769,9 +748,7 @@ jobs:
 
     - name: Build and push (release)
       id: docker_build_release
-      # For Generate-DockerImageVariants: For CalVer releases. Each push to 'release' branch is a time-based release.
-      # if: startsWith(github.ref, 'refs/tags/')
-      if: github.ref == 'refs/heads/release'
+      if: startsWith(github.ref, 'refs/tags/')
       uses: docker/build-push-action@v2
       with:
         context: ${{ steps.prep.outputs.CONTEXT }}
@@ -795,7 +772,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VARIANT_TAG: 3.9-curl-git-jq-ssh
-      # VARIANT_TAG_WITH_REF: 3.9-curl-git-jq-ssh-${GITHUB_REF}
       VARIANT_BUILD_DIR: variants/3.9-curl-git-jq-ssh
     steps:
     - name: Checkout
@@ -841,11 +817,12 @@ jobs:
         # CI_PROJECT_NAMESPACE=$( echo "${{ github.repository }}" | cut -d '/' -f 1 )
         # CI_PROJECT_NAME=$( echo "${{ github.repository }}" | cut -d '/' -f 2 )
 
-        # Get 'ref-name' from 'refs/heads/ref-name'
+        # Get 'ref-name' from 'refs/heads/ref-name'. E.g. 'master'
         REF=$( echo "${GITHUB_REF}" | rev | cut -d '/' -f 1 | rev )
+        # Get commit hash E.g. 'b29758a'
         SHA_SHORT=$( echo "${GITHUB_SHA}" | cut -c1-7 )
 
-        # For Generate-DockerImageVariants: Generate the final tags. E.g. 'master-v1.0.0-alpine' and 'master-b29758a-v1.0.0-alpine'
+        # Generate the final tags. E.g. 'master-v1.0.0-alpine' and 'master-b29758a-v1.0.0-alpine'
         VARIANT_TAG_WITH_REF="${REF}-${VARIANT_TAG}"
         VARIANT_TAG_WITH_REF_AND_SHA_SHORT="${REF}-${SHA_SHORT}-${VARIANT_TAG}"
 
@@ -855,8 +832,6 @@ jobs:
         # echo "::set-output name=REF::$REF"
         # echo "::set-output name=SHA_SHORT::$SHA_SHORT"
         # echo "::set-output name=REF_AND_SHA_SHORT::$REF_AND_SHA_SHORT"
-
-        # For Generate-DockerImageVariants: Set step output(s)
         echo "::set-output name=CONTEXT::$VARIANT_BUILD_DIR"
         echo "::set-output name=VARIANT_TAG::$VARIANT_TAG"
         echo "::set-output name=VARIANT_TAG_WITH_REF::$VARIANT_TAG_WITH_REF"
@@ -899,9 +874,7 @@ jobs:
 
     - name: Build and push (release)
       id: docker_build_release
-      # For Generate-DockerImageVariants: For CalVer releases. Each push to 'release' branch is a time-based release.
-      # if: startsWith(github.ref, 'refs/tags/')
-      if: github.ref == 'refs/heads/release'
+      if: startsWith(github.ref, 'refs/tags/')
       uses: docker/build-push-action@v2
       with:
         context: ${{ steps.prep.outputs.CONTEXT }}
@@ -925,7 +898,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VARIANT_TAG: 3.9-curl-mysqlclient-openssl
-      # VARIANT_TAG_WITH_REF: 3.9-curl-mysqlclient-openssl-${GITHUB_REF}
       VARIANT_BUILD_DIR: variants/3.9-curl-mysqlclient-openssl
     steps:
     - name: Checkout
@@ -971,11 +943,12 @@ jobs:
         # CI_PROJECT_NAMESPACE=$( echo "${{ github.repository }}" | cut -d '/' -f 1 )
         # CI_PROJECT_NAME=$( echo "${{ github.repository }}" | cut -d '/' -f 2 )
 
-        # Get 'ref-name' from 'refs/heads/ref-name'
+        # Get 'ref-name' from 'refs/heads/ref-name'. E.g. 'master'
         REF=$( echo "${GITHUB_REF}" | rev | cut -d '/' -f 1 | rev )
+        # Get commit hash E.g. 'b29758a'
         SHA_SHORT=$( echo "${GITHUB_SHA}" | cut -c1-7 )
 
-        # For Generate-DockerImageVariants: Generate the final tags. E.g. 'master-v1.0.0-alpine' and 'master-b29758a-v1.0.0-alpine'
+        # Generate the final tags. E.g. 'master-v1.0.0-alpine' and 'master-b29758a-v1.0.0-alpine'
         VARIANT_TAG_WITH_REF="${REF}-${VARIANT_TAG}"
         VARIANT_TAG_WITH_REF_AND_SHA_SHORT="${REF}-${SHA_SHORT}-${VARIANT_TAG}"
 
@@ -985,8 +958,6 @@ jobs:
         # echo "::set-output name=REF::$REF"
         # echo "::set-output name=SHA_SHORT::$SHA_SHORT"
         # echo "::set-output name=REF_AND_SHA_SHORT::$REF_AND_SHA_SHORT"
-
-        # For Generate-DockerImageVariants: Set step output(s)
         echo "::set-output name=CONTEXT::$VARIANT_BUILD_DIR"
         echo "::set-output name=VARIANT_TAG::$VARIANT_TAG"
         echo "::set-output name=VARIANT_TAG_WITH_REF::$VARIANT_TAG_WITH_REF"
@@ -1029,9 +1000,7 @@ jobs:
 
     - name: Build and push (release)
       id: docker_build_release
-      # For Generate-DockerImageVariants: For CalVer releases. Each push to 'release' branch is a time-based release.
-      # if: startsWith(github.ref, 'refs/tags/')
-      if: github.ref == 'refs/heads/release'
+      if: startsWith(github.ref, 'refs/tags/')
       uses: docker/build-push-action@v2
       with:
         context: ${{ steps.prep.outputs.CONTEXT }}
@@ -1055,7 +1024,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VARIANT_TAG: 3.8-curl-git-jq-ssh
-      # VARIANT_TAG_WITH_REF: 3.8-curl-git-jq-ssh-${GITHUB_REF}
       VARIANT_BUILD_DIR: variants/3.8-curl-git-jq-ssh
     steps:
     - name: Checkout
@@ -1101,11 +1069,12 @@ jobs:
         # CI_PROJECT_NAMESPACE=$( echo "${{ github.repository }}" | cut -d '/' -f 1 )
         # CI_PROJECT_NAME=$( echo "${{ github.repository }}" | cut -d '/' -f 2 )
 
-        # Get 'ref-name' from 'refs/heads/ref-name'
+        # Get 'ref-name' from 'refs/heads/ref-name'. E.g. 'master'
         REF=$( echo "${GITHUB_REF}" | rev | cut -d '/' -f 1 | rev )
+        # Get commit hash E.g. 'b29758a'
         SHA_SHORT=$( echo "${GITHUB_SHA}" | cut -c1-7 )
 
-        # For Generate-DockerImageVariants: Generate the final tags. E.g. 'master-v1.0.0-alpine' and 'master-b29758a-v1.0.0-alpine'
+        # Generate the final tags. E.g. 'master-v1.0.0-alpine' and 'master-b29758a-v1.0.0-alpine'
         VARIANT_TAG_WITH_REF="${REF}-${VARIANT_TAG}"
         VARIANT_TAG_WITH_REF_AND_SHA_SHORT="${REF}-${SHA_SHORT}-${VARIANT_TAG}"
 
@@ -1115,8 +1084,6 @@ jobs:
         # echo "::set-output name=REF::$REF"
         # echo "::set-output name=SHA_SHORT::$SHA_SHORT"
         # echo "::set-output name=REF_AND_SHA_SHORT::$REF_AND_SHA_SHORT"
-
-        # For Generate-DockerImageVariants: Set step output(s)
         echo "::set-output name=CONTEXT::$VARIANT_BUILD_DIR"
         echo "::set-output name=VARIANT_TAG::$VARIANT_TAG"
         echo "::set-output name=VARIANT_TAG_WITH_REF::$VARIANT_TAG_WITH_REF"
@@ -1159,9 +1126,7 @@ jobs:
 
     - name: Build and push (release)
       id: docker_build_release
-      # For Generate-DockerImageVariants: For CalVer releases. Each push to 'release' branch is a time-based release.
-      # if: startsWith(github.ref, 'refs/tags/')
-      if: github.ref == 'refs/heads/release'
+      if: startsWith(github.ref, 'refs/tags/')
       uses: docker/build-push-action@v2
       with:
         context: ${{ steps.prep.outputs.CONTEXT }}
@@ -1185,7 +1150,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VARIANT_TAG: 3.8-curl-mysqlclient-openssl
-      # VARIANT_TAG_WITH_REF: 3.8-curl-mysqlclient-openssl-${GITHUB_REF}
       VARIANT_BUILD_DIR: variants/3.8-curl-mysqlclient-openssl
     steps:
     - name: Checkout
@@ -1231,11 +1195,12 @@ jobs:
         # CI_PROJECT_NAMESPACE=$( echo "${{ github.repository }}" | cut -d '/' -f 1 )
         # CI_PROJECT_NAME=$( echo "${{ github.repository }}" | cut -d '/' -f 2 )
 
-        # Get 'ref-name' from 'refs/heads/ref-name'
+        # Get 'ref-name' from 'refs/heads/ref-name'. E.g. 'master'
         REF=$( echo "${GITHUB_REF}" | rev | cut -d '/' -f 1 | rev )
+        # Get commit hash E.g. 'b29758a'
         SHA_SHORT=$( echo "${GITHUB_SHA}" | cut -c1-7 )
 
-        # For Generate-DockerImageVariants: Generate the final tags. E.g. 'master-v1.0.0-alpine' and 'master-b29758a-v1.0.0-alpine'
+        # Generate the final tags. E.g. 'master-v1.0.0-alpine' and 'master-b29758a-v1.0.0-alpine'
         VARIANT_TAG_WITH_REF="${REF}-${VARIANT_TAG}"
         VARIANT_TAG_WITH_REF_AND_SHA_SHORT="${REF}-${SHA_SHORT}-${VARIANT_TAG}"
 
@@ -1245,8 +1210,6 @@ jobs:
         # echo "::set-output name=REF::$REF"
         # echo "::set-output name=SHA_SHORT::$SHA_SHORT"
         # echo "::set-output name=REF_AND_SHA_SHORT::$REF_AND_SHA_SHORT"
-
-        # For Generate-DockerImageVariants: Set step output(s)
         echo "::set-output name=CONTEXT::$VARIANT_BUILD_DIR"
         echo "::set-output name=VARIANT_TAG::$VARIANT_TAG"
         echo "::set-output name=VARIANT_TAG_WITH_REF::$VARIANT_TAG_WITH_REF"
@@ -1289,9 +1252,7 @@ jobs:
 
     - name: Build and push (release)
       id: docker_build_release
-      # For Generate-DockerImageVariants: For CalVer releases. Each push to 'release' branch is a time-based release.
-      # if: startsWith(github.ref, 'refs/tags/')
-      if: github.ref == 'refs/heads/release'
+      if: startsWith(github.ref, 'refs/tags/')
       uses: docker/build-push-action@v2
       with:
         context: ${{ steps.prep.outputs.CONTEXT }}
@@ -1311,22 +1272,7 @@ jobs:
       run: docker logout
       if: always()
 
-  # For Generate-DockerImageVariants: For CalVer releases. Each push to 'release' branch is a time-based release.
-  converge-master-and-release-branches:
-    needs: [build-3-12-curl-git-jq-ssh, build-3-12-curl-mysqlclient-openssl, build-3-11-curl-git-jq-ssh, build-3-11-curl-mysqlclient-openssl, build-3-10-curl-git-jq-ssh, build-3-10-curl-mysqlclient-openssl, build-3-9-curl-git-jq-ssh, build-3-9-curl-mysqlclient-openssl, build-3-8-curl-git-jq-ssh, build-3-8-curl-mysqlclient-openssl]
-    if: github.ref == 'refs/heads/release'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Merge release into master (fast-forward)
-        run: |
-          git checkout master
-          git merge release
-          git push origin master
-
-  # For Generate-DockerImageVariants: For CalVer releases. Each push to 'release' branch is a time-based release.
+  # For CalVer releases
   resolve-release-tag:
     runs-on: ubuntu-latest
     outputs:
@@ -1363,7 +1309,8 @@ jobs:
         run: echo ${{ steps.resolve-release-tag.outputs.TAG }}
 
   update-draft-release:
-    needs: [build-3-12-curl-git-jq-ssh, build-3-12-curl-mysqlclient-openssl, build-3-11-curl-git-jq-ssh, build-3-11-curl-mysqlclient-openssl, build-3-10-curl-git-jq-ssh, build-3-10-curl-mysqlclient-openssl, build-3-9-curl-git-jq-ssh, build-3-9-curl-mysqlclient-openssl, build-3-8-curl-git-jq-ssh, build-3-8-curl-mysqlclient-openssl, resolve-release-tag]
+    # For CalVer releases
+    needs: [resolve-release-tag, build-3-12-curl-git-jq-ssh, build-3-12-curl-mysqlclient-openssl, build-3-11-curl-git-jq-ssh, build-3-11-curl-mysqlclient-openssl, build-3-10-curl-git-jq-ssh, build-3-10-curl-mysqlclient-openssl, build-3-9-curl-git-jq-ssh, build-3-9-curl-mysqlclient-openssl, build-3-8-curl-git-jq-ssh, build-3-8-curl-mysqlclient-openssl]
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
@@ -1383,10 +1330,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish-draft-release:
-    needs: [build-3-12-curl-git-jq-ssh, build-3-12-curl-mysqlclient-openssl, build-3-11-curl-git-jq-ssh, build-3-11-curl-mysqlclient-openssl, build-3-10-curl-git-jq-ssh, build-3-10-curl-mysqlclient-openssl, build-3-9-curl-git-jq-ssh, build-3-9-curl-mysqlclient-openssl, build-3-8-curl-git-jq-ssh, build-3-8-curl-mysqlclient-openssl, converge-master-and-release-branches, resolve-release-tag]
-    # For Generate-DockerImageVariants: For CalVer releases. Each push to 'release' branch is a time-based release.
-    # if: startsWith(github.ref, 'refs/tags/')
-    if: github.ref == 'refs/heads/release'
+    # For CalVer releases
+    needs: [resolve-release-tag, build-3-12-curl-git-jq-ssh, build-3-12-curl-mysqlclient-openssl, build-3-11-curl-git-jq-ssh, build-3-11-curl-mysqlclient-openssl, build-3-10-curl-git-jq-ssh, build-3-10-curl-mysqlclient-openssl, build-3-9-curl-git-jq-ssh, build-3-9-curl-mysqlclient-openssl, build-3-8-curl-git-jq-ssh, build-3-8-curl-mysqlclient-openssl]
+    if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -1395,6 +1341,7 @@ jobs:
         with:
           config-name: release-drafter.yml
           publish: true
+          # For CalVer releases
           name: ${{ needs.resolve-release-tag.outputs.TAG }}
           tag: ${{ needs.resolve-release-tag.outputs.TAG }}
         env:
