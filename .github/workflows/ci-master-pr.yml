@@ -1294,7 +1294,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Resolve tag
-        id resolve-tag
+        id: resolve-tag
         run: |
           # Get <branch_name> from refs/heads/<branch_name>, or <tag-name> from refs/tags/<tag_name>. E.g. . E.g. 'master', 'v1.2.3'
           REF=$( echo "${GITHUB_REF}" | rev | cut -d '/' -f 1 | rev )
