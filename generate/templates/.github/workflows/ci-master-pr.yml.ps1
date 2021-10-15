@@ -70,7 +70,7 @@ $VARIANTS | % {
         # CI_PROJECT_NAMESPACE=$( echo "${{ github.repository }}" | cut -d '/' -f 1 )
         # CI_PROJECT_NAME=$( echo "${{ github.repository }}" | cut -d '/' -f 2 )
 
-        # Get 'ref-name' from 'refs/heads/ref-name'. E.g. 'master'
+        # Get <branch_name> from refs/heads/<branch_name>, or <tag-name> from refs/tags/<tag_name>. E.g. . E.g. 'master', 'v1.2.3'
         REF=$( echo "${GITHUB_REF}" | rev | cut -d '/' -f 1 | rev )
         # Get commit hash E.g. 'b29758a'
         SHA_SHORT=$( echo "${GITHUB_SHA}" | cut -c1-7 )
@@ -174,17 +174,12 @@ if ( $_['tag_as_latest'] ) {
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Print inputs
         run: echo ${{ needs.resolve-release-tag.outputs.TAG }}
       # Drafts your next Release notes as Pull Requests are merged into "master"
       - uses: release-drafter/release-drafter@v5
         with:
           config-name: release-drafter.yml
           publish: false
-          name: ${{ needs.resolve-release-tag.outputs.TAG }}
-          tag: ${{ needs.resolve-release-tag.outputs.TAG }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 '@
@@ -201,11 +196,19 @@ if ( $_['tag_as_latest'] ) {
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Resolve tag
+        id resolve-tag
+        run: |
+          # Get <branch_name> from refs/heads/<branch_name>, or <tag-name> from refs/tags/<tag_name>. E.g. . E.g. 'master', 'v1.2.3'
+          REF=$( echo "${GITHUB_REF}" | rev | cut -d '/' -f 1 | rev )
+          echo "::set-output name=REF::$REF"
       # Drafts your next Release notes as Pull Requests are merged into "master"
       - uses: release-drafter/release-drafter@v5
         with:
           config-name: release-drafter.yml
           publish: true
+          name: ${{ steps.resolve-tag.outputs.REF }}
+          tag: ${{ steps.resolve-tag.outputs.REF }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
