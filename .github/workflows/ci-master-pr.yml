@@ -192,7 +192,7 @@ jobs:
         path: /tmp/.buildx-cache
         key: ${{ runner.os }}-buildx-${{ env.VARIANT }}-${{ github.sha }}
         restore-keys: |
-          ${{ runner.os }}-buildx-${{ env.VARIANT }}-
+          ${{ runner.os }}-buildx-${{ env.BASEVARIANT }}-
           ${{ runner.os }}-buildx-
 
     # This step generates the docker tags
@@ -239,7 +239,7 @@ jobs:
           ${{ github.repository }}:${{ env.REF_VARIANT }}
           ${{ github.repository }}:${{ env.REF_SHA_VARIANT }}
         cache-from: |
-          ${{ github.repository }}:${{ env.REF_SHA_BASEVARIANT }}
+          type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
 
     - name: Build and push (master)
@@ -315,7 +315,7 @@ jobs:
         path: /tmp/.buildx-cache
         key: ${{ runner.os }}-buildx-${{ env.VARIANT }}-${{ github.sha }}
         restore-keys: |
-          ${{ runner.os }}-buildx-${{ env.VARIANT }}-
+          ${{ runner.os }}-buildx-${{ env.BASEVARIANT }}-
           ${{ runner.os }}-buildx-
 
     # This step generates the docker tags
@@ -362,7 +362,7 @@ jobs:
           ${{ github.repository }}:${{ env.REF_VARIANT }}
           ${{ github.repository }}:${{ env.REF_SHA_VARIANT }}
         cache-from: |
-          ${{ github.repository }}:${{ env.REF_SHA_BASEVARIANT }}
+          type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
 
     - name: Build and push (master)
@@ -438,7 +438,7 @@ jobs:
         path: /tmp/.buildx-cache
         key: ${{ runner.os }}-buildx-${{ env.VARIANT }}-${{ github.sha }}
         restore-keys: |
-          ${{ runner.os }}-buildx-${{ env.VARIANT }}-
+          ${{ runner.os }}-buildx-${{ env.BASEVARIANT }}-
           ${{ runner.os }}-buildx-
 
     # This step generates the docker tags
@@ -485,7 +485,7 @@ jobs:
           ${{ github.repository }}:${{ env.REF_VARIANT }}
           ${{ github.repository }}:${{ env.REF_SHA_VARIANT }}
         cache-from: |
-          ${{ github.repository }}:${{ env.REF_SHA_BASEVARIANT }}
+          type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
 
     - name: Build and push (master)
