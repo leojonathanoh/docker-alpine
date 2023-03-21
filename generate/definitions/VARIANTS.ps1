@@ -1,9 +1,5 @@
 $local:VARIANTS_DISTRO_VERSIONS = @(
     '3.12'
-    '3.11'
-    '3.10'
-    '3.9'
-    '3.8'
 )
 # Docker image variants' definitions
 $local:VARIANTS_MATRIX = @(
@@ -12,10 +8,10 @@ $local:VARIANTS_MATRIX = @(
             distro = 'alpine'
             distro_version = $v
             subvariants = @(
-                @{ components = @( 'curl', 'git', 'jq', 'ssh' ); tag_as_latest = if ($v -eq $local:VARIANTS_DISTRO_VERSIONS[0]) { $true } else { $false } }
-                @{ components = @( 'curl', 'mysqlclient', 'openssl' ) }
-                @{ components = @( 'iptables' ) }
-                @{ components = @( 'rsync' ) }
+                @{ components = @( 'curl' ) }
+                @{ components = @( 'curl', 'git' ) }
+                @{ components = @( 'curl', 'git', 'jq' ) }
+                @{ components = @( 'curl', 'git', 'jq', 'ssh' ) }
             )
         }
     }
