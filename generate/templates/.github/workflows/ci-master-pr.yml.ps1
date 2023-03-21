@@ -129,12 +129,16 @@ $VARIANTS | % {
           `${{ github.repository }}:`${{ env.REF_VARIANT }}
           `${{ github.repository }}:`${{ env.REF_SHA_VARIANT }}
         cache-from: |
-          type=local,src=/tmp/.buildx-cache
 
 "@
 if ($_['_metadata']['base_tag']) {
 @'
           ${{ github.repository }}:${{ env.REF_SHA_BASEVARIANT }}
+
+'@
+}else {
+@'
+          type=local,src=/tmp/.buildx-cache
 
 '@
 }
