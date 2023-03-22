@@ -149,7 +149,6 @@ if ($_['_metadata']['base_tag']) {
 
 '@
 }
-
 @"
 
     - name: Build and push (master)
@@ -163,8 +162,28 @@ if ($_['_metadata']['base_tag']) {
         tags: |
           `${{ github.repository }}:`${{ env.REF_VARIANT }}
           `${{ github.repository }}:`${{ env.REF_SHA_VARIANT }}
-        cache-from: type=local,src=/tmp/.buildx-cache
-        cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+
+"@
+# Use local cache for base builds, and remote image and inline
+if ($_['_metadata']['base_tag']) {
+@'
+        cache-from: |
+          ${{ github.repository }}:${{ env.REF_SHA_BASEVARIANT }}
+        cache-to: |
+          type=inline
+
+'@
+}else {
+@'
+        cache-from: |
+          type=local,src=/tmp/.buildx-cache
+        cache-to: |
+          type=local,dest=/tmp/.buildx-cache-new,mode=max
+          type=inline
+
+'@
+}
+@"
 
     - name: Build and push (release)
       if: startsWith(github.ref, 'refs/tags/')
@@ -186,9 +205,26 @@ if ( $_['tag_as_latest'] ) {
 
 '@
 }
+# Use local cache for base builds, and remote image and inline
+if ($_['_metadata']['base_tag']) {
 @'
-        cache-from: type=local,src=/tmp/.buildx-cache
-        cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+        cache-from: |
+          ${{ github.repository }}:${{ env.REF_SHA_BASEVARIANT }}
+        cache-to: |
+          type=inline
+
+'@
+}else {
+@'
+        cache-from: |
+          type=local,src=/tmp/.buildx-cache
+        cache-to: |
+          type=local,dest=/tmp/.buildx-cache-new,mode=max
+          type=inline
+
+'@
+}
+@'
 
     # Temp fix
     # https://github.com/docker/build-push-action/issues/252
