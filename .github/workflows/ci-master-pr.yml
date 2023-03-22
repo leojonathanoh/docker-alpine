@@ -117,7 +117,9 @@ jobs:
           ${{ github.repository }}:${{ env.REF_SHA_VARIANT }}
         cache-from: |
           type=local,src=/tmp/.buildx-cache
-        cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+        cache-to: |
+          type=local,dest=/tmp/.buildx-cache-new,mode=max
+          type=inline
 
     - name: Build and push (master)
       # Run only on master
@@ -240,7 +242,9 @@ jobs:
           ${{ github.repository }}:${{ env.REF_SHA_VARIANT }}
         cache-from: |
           ${{ github.repository }}:${{ env.REF_SHA_BASEVARIANT }}
-        cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+        cache-to: |
+          type=local,dest=/tmp/.buildx-cache-new,mode=max
+          type=inline
 
     - name: Build and push (master)
       # Run only on master
@@ -363,7 +367,9 @@ jobs:
           ${{ github.repository }}:${{ env.REF_SHA_VARIANT }}
         cache-from: |
           ${{ github.repository }}:${{ env.REF_SHA_BASEVARIANT }}
-        cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+        cache-to: |
+          type=local,dest=/tmp/.buildx-cache-new,mode=max
+          type=inline
 
     - name: Build and push (master)
       # Run only on master
@@ -486,7 +492,9 @@ jobs:
           ${{ github.repository }}:${{ env.REF_SHA_VARIANT }}
         cache-from: |
           ${{ github.repository }}:${{ env.REF_SHA_BASEVARIANT }}
-        cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+        cache-to: |
+          type=local,dest=/tmp/.buildx-cache-new,mode=max
+          type=inline
 
     - name: Build and push (master)
       # Run only on master

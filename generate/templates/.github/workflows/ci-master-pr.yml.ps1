@@ -143,7 +143,9 @@ if ($_['_metadata']['base_tag']) {
 '@
 }
 @"
-        cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+        cache-to: |
+          type=local,dest=/tmp/.buildx-cache-new,mode=max
+          type=inline
 
     - name: Build and push (master)
       # Run only on master
