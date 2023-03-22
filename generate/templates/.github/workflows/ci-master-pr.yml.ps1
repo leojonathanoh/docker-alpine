@@ -43,7 +43,7 @@ $VARIANTS | % {
     needs: [test-nogitdiff$( if ($_['_metadata']['base_tag']) { ", build-$( $_['_metadata']['base_tag'] )".Replace('.', '-') } else {} )]
     runs-on: ubuntu-latest
     env:
-      BASEVARIANT: $( $_['_metadata']['base_tag'] )
+      BASEVARIANT: $( if ($_['_metadata']['base_tag']) { $_['_metadata']['base_tag'] } else { "''" } )
       VARIANT: $( $_['tag'] )
 "@
 @'
@@ -196,7 +196,7 @@ if ( $_['tag_as_latest'] ) {
     - name: Move cache
       run: |
         rm -rf /tmp/.buildx-cache
-        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+        mv -v /tmp/.buildx-cache-new /tmp/.buildx-cache || true
 '@
 }
 

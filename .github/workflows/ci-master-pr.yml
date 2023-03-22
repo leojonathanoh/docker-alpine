@@ -36,7 +36,7 @@ jobs:
     needs: [test-nogitdiff]
     runs-on: ubuntu-latest
     env:
-      BASEVARIANT: 
+      BASEVARIANT: ''
       VARIANT: 3.12-curl
     steps:
     - name: Checkout
@@ -155,7 +155,7 @@ jobs:
     - name: Move cache
       run: |
         rm -rf /tmp/.buildx-cache
-        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+        mv -v /tmp/.buildx-cache-new /tmp/.buildx-cache || true
 
   build-3-12-curl-git:
     needs: [test-nogitdiff, build-3-12-curl]
@@ -279,7 +279,7 @@ jobs:
     - name: Move cache
       run: |
         rm -rf /tmp/.buildx-cache
-        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+        mv -v /tmp/.buildx-cache-new /tmp/.buildx-cache || true
 
   build-3-12-curl-git-jq:
     needs: [test-nogitdiff, build-3-12-curl-git]
@@ -403,7 +403,7 @@ jobs:
     - name: Move cache
       run: |
         rm -rf /tmp/.buildx-cache
-        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+        mv -v /tmp/.buildx-cache-new /tmp/.buildx-cache || true
 
   build-3-12-curl-git-jq-ssh:
     needs: [test-nogitdiff, build-3-12-curl-git-jq]
@@ -527,7 +527,7 @@ jobs:
     - name: Move cache
       run: |
         rm -rf /tmp/.buildx-cache
-        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+        mv -v /tmp/.buildx-cache-new /tmp/.buildx-cache || true
 
   update-draft-release:
     needs: [build-3-12-curl, build-3-12-curl-git, build-3-12-curl-git-jq, build-3-12-curl-git-jq-ssh]
