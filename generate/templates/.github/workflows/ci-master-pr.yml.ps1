@@ -130,8 +130,8 @@ $VARIANTS | % {
           `${{ github.repository }}:`${{ env.REF_SHA_VARIANT }}
 
 "@
-# Use local cache for base builds, and remote image and inline
 if ($_['_metadata']['base_tag']) {
+# Use remote image cache and inline cache for incremental builds
 @'
         cache-from: |
           ${{ github.repository }}:${{ env.REF_SHA_BASEVARIANT }}
@@ -140,6 +140,7 @@ if ($_['_metadata']['base_tag']) {
 
 '@
 }else {
+# Use local cache for base builds
 @'
         cache-from: |
           type=local,src=/tmp/.buildx-cache
@@ -164,8 +165,8 @@ if ($_['_metadata']['base_tag']) {
           `${{ github.repository }}:`${{ env.REF_SHA_VARIANT }}
 
 "@
-# Use local cache for base builds, and remote image and inline
 if ($_['_metadata']['base_tag']) {
+# Use remote image cache and inline cache for incremental builds
 @'
         cache-from: |
           ${{ github.repository }}:${{ env.REF_SHA_BASEVARIANT }}
@@ -174,6 +175,7 @@ if ($_['_metadata']['base_tag']) {
 
 '@
 }else {
+# Use local cache for base builds
 @'
         cache-from: |
           type=local,src=/tmp/.buildx-cache
@@ -205,8 +207,8 @@ if ( $_['tag_as_latest'] ) {
 
 '@
 }
-# Use local cache for base builds, and remote image and inline
 if ($_['_metadata']['base_tag']) {
+# Use remote image cache and inline cache for incremental builds
 @'
         cache-from: |
           ${{ github.repository }}:${{ env.REF_SHA_BASEVARIANT }}
@@ -215,6 +217,7 @@ if ($_['_metadata']['base_tag']) {
 
 '@
 }else {
+# Use local cache for base builds
 @'
         cache-from: |
           type=local,src=/tmp/.buildx-cache
