@@ -40,8 +40,10 @@ $VARIANTS | % {
 
 
   build-$( $_['tag'].Replace('.', '-') ):
+    needs: [test-nogitdiff$( if ($_['_metadata']['base_tag']) { ", build-$( $_['_metadata']['base_tag'] )".Replace('.', '-') } else {} )]
     runs-on: ubuntu-latest
     env:
+      BASEVARIANT: $( if ($_['_metadata']['base_tag']) { $_['_metadata']['base_tag'] } else { "''" } )
       VARIANT: $( $_['tag'] )
 "@
 @'
@@ -95,18 +97,18 @@ $VARIANTS | % {
         # Generate docker image tags
         # E.g. 'v0.0.0-<variant>' and 'v0.0.0-abc0123-<variant>'
         # E.g. 'master-<variant>' and 'master-abc0123-<variant>'
+        REF_SHA_BASEVARIANT="${REF}-${SHA}-${BASEVARIANT}"
         REF_VARIANT="${REF}-${VARIANT}"
         REF_SHA_VARIANT="${REF}-${SHA}-${VARIANT}"
 
         # Pass variables to next step
-        echo "VARIANT_BUILD_DIR=$VARIANT_BUILD_DIR" >> $GITHUB_ENV
+        echo "REF_SHA_BASEVARIANT=$REF_SHA_BASEVARIANT" >> $GITHUB_ENV
         echo "VARIANT=$VARIANT" >> $GITHUB_ENV
         echo "REF_VARIANT=$REF_VARIANT" >> $GITHUB_ENV
         echo "REF_SHA_VARIANT=$REF_SHA_VARIANT" >> $GITHUB_ENV
 
     - name: Login to Docker Hub registry
-      # Run on master and tags
-      if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
+      # if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
       uses: docker/login-action@v2
       with:
         username: ${{ secrets.DOCKERHUB_REGISTRY_USER }}
@@ -122,12 +124,33 @@ $VARIANTS | % {
       with:
         context: $( $_['build_dir_rel'] )
         platforms: $( $_['_metadata']['platforms'] -join ',' )
-        push: false
+        push: true
         tags: |
           `${{ github.repository }}:`${{ env.REF_VARIANT }}
           `${{ github.repository }}:`${{ env.REF_SHA_VARIANT }}
-        cache-from: type=local,src=/tmp/.buildx-cache
-        cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+
+"@
+if ($_['_metadata']['base_tag']) {
+# Use remote image cache and inline cache for incremental builds
+@'
+        cache-from: |
+          ${{ github.repository }}:${{ env.REF_SHA_BASEVARIANT }}
+        cache-to: |
+          type=inline
+
+'@
+}else {
+# Use local cache for base builds
+@'
+        cache-from: |
+          type=local,src=/tmp/.buildx-cache
+        cache-to: |
+          type=local,dest=/tmp/.buildx-cache-new,mode=max
+          type=inline
+
+'@
+}
+@"
 
     - name: Build and push (master)
       # Run only on master
@@ -140,8 +163,29 @@ $VARIANTS | % {
         tags: |
           `${{ github.repository }}:`${{ env.REF_VARIANT }}
           `${{ github.repository }}:`${{ env.REF_SHA_VARIANT }}
-        cache-from: type=local,src=/tmp/.buildx-cache
-        cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+
+"@
+if ($_['_metadata']['base_tag']) {
+# Use remote image cache and inline cache for incremental builds
+@'
+        cache-from: |
+          ${{ github.repository }}:${{ env.REF_SHA_BASEVARIANT }}
+        cache-to: |
+          type=inline
+
+'@
+}else {
+# Use local cache for base builds
+@'
+        cache-from: |
+          type=local,src=/tmp/.buildx-cache
+        cache-to: |
+          type=local,dest=/tmp/.buildx-cache-new,mode=max
+          type=inline
+
+'@
+}
+@"
 
     - name: Build and push (release)
       if: startsWith(github.ref, 'refs/tags/')
@@ -163,9 +207,27 @@ if ( $_['tag_as_latest'] ) {
 
 '@
 }
+if ($_['_metadata']['base_tag']) {
+# Use remote image cache and inline cache for incremental builds
 @'
-        cache-from: type=local,src=/tmp/.buildx-cache
-        cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+        cache-from: |
+          ${{ github.repository }}:${{ env.REF_SHA_BASEVARIANT }}
+        cache-to: |
+          type=inline
+
+'@
+}else {
+# Use local cache for base builds
+@'
+        cache-from: |
+          type=local,src=/tmp/.buildx-cache
+        cache-to: |
+          type=local,dest=/tmp/.buildx-cache-new,mode=max
+          type=inline
+
+'@
+}
+@'
 
     # Temp fix
     # https://github.com/docker/build-push-action/issues/252
@@ -173,7 +235,7 @@ if ( $_['tag_as_latest'] ) {
     - name: Move cache
       run: |
         rm -rf /tmp/.buildx-cache
-        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+        mv -v /tmp/.buildx-cache-new /tmp/.buildx-cache || true
 '@
 }
 

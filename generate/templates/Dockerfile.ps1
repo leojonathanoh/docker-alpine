@@ -7,7 +7,7 @@ FROM $( $VARIANT['_metadata']['distro'] ):$( $VARIANT['_metadata']['distro_versi
 $VARIANT['_metadata']['components'] | % {
     $component = $_
 
-    switch( $component ) {
+    switch( $_['name'] ) {
 
         'curl' {
         @"
@@ -71,10 +71,6 @@ RUN apk add --no-cache openssh
 
 
 "@
-        }
-
-        default {
-            throw "No such component: $component"
         }
     }
 }
