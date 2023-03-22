@@ -128,24 +128,29 @@ $VARIANTS | % {
         tags: |
           `${{ github.repository }}:`${{ env.REF_VARIANT }}
           `${{ github.repository }}:`${{ env.REF_SHA_VARIANT }}
-        cache-from: |
 
 "@
+# Use local cache for base builds, and remote image and inline
 if ($_['_metadata']['base_tag']) {
 @'
+        cache-from: |
           ${{ github.repository }}:${{ env.REF_SHA_BASEVARIANT }}
+        cache-to: |
+          type=inline
 
 '@
 }else {
 @'
+        cache-from: |
           type=local,src=/tmp/.buildx-cache
-
-'@
-}
-@"
         cache-to: |
           type=local,dest=/tmp/.buildx-cache-new,mode=max
           type=inline
+
+'@
+}
+
+@"
 
     - name: Build and push (master)
       # Run only on master
