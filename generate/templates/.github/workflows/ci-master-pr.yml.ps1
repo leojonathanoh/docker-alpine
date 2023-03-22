@@ -79,21 +79,8 @@ $VARIANTS | % {
         path: /tmp/.buildx-cache
         key: ${{ runner.os }}-buildx-${{ env.VARIANT }}-${{ github.sha }}
         restore-keys: |
-
-'@
-if ($_['_metadata']['base_tag']) {
-@'
-          ${{ runner.os }}-buildx-${{ env.BASEVARIANT }}-
-          ${{ runner.os }}-buildx-
-'@
-}else {
-@'
           ${{ runner.os }}-buildx-${{ env.VARIANT }}-
           ${{ runner.os }}-buildx-
-'@
-}
-@'
-
 
     # This step generates the docker tags
     - name: Prepare
@@ -144,7 +131,7 @@ if ($_['_metadata']['base_tag']) {
         cache-from: |
 
 "@
-if ($false -and $_['_metadata']['base_tag']) {
+if ($_['_metadata']['base_tag']) {
 @'
           ${{ github.repository }}:${{ env.REF_SHA_BASEVARIANT }}
 
