@@ -1,0 +1,12 @@
+name: cron
+on:
+  schedule:
+    # Run daily
+    - cron: '0 0 * * *'
+jobs:
+  cron-job:
+    runs-on: ubuntu-latest
+    steps:
+    - run: |
+        echo hello world
+
