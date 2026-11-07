@@ -1,26 +1,19 @@
 $global:VERSIONS = @( Get-Content $PSScriptRoot/versions.json -Encoding utf8 -raw | ConvertFrom-Json )
 
 # Docker image variants' definitions
-$local:VARIANTS_DISTRO_VERSIONS = @(
-    '3.24'
-    '3.20'
-    '3.17'
-    '3.15'
-    '3.12'
-)
-# Docker image variants' definitions
 $local:VARIANTS_MATRIX = @(
-    foreach ($v in $local:VARIANTS_DISTRO_VERSIONS) {
+    foreach ($v in $global:VERSIONS.alpine.versions) {
+        $v = [version]$v
         @{
             distro = 'alpine'
-            distro_version = $v
+            distro_version = "$( $v.Major ).$( $v.Minor )"
             subvariants = @(
-                @{ components = @( 'curl', 'git', 'jq', 'ssh' ); tag_as_latest = if ($v -eq $local:VARIANTS_DISTRO_VERSIONS[0]) { $true } else { $false } }
-                if ( [version]$v -ge [version]'3.20' ) {
+                @{ components = @( 'curl', 'git', 'jq', 'ssh' ); tag_as_latest = if ($v -eq $global:VERSIONS.alpine.versions[0]) { $true } else { $false } }
+                if ( $v -ge [version]'3.20' ) {
                     @{ components = @( 'apprise', 'curl', 'git', 'jq', 'ssh' ) }
                 }
                 @{ components = @( 'curl', 'mysqlclient', 'openssl' ) }
-                if ( [version]$v -ge [version]'3.20' ) {
+                if ( $v -ge [version]'3.20' ) {
                     @{ components = @( 'apprise', 'curl', 'mysqlclient', 'openssl' ) }
                 }
                 @{ components = @( 'pingme' ) }
