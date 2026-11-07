@@ -3,10 +3,9 @@ $global:VERSIONS = @( Get-Content $PSScriptRoot/versions.json -Encoding utf8 -ra
 # Docker image variants' definitions
 $local:VARIANTS_MATRIX = @(
     foreach ($v in $global:VERSIONS.alpine.versions) {
-        $v = [version]$v
         @{
             distro = 'alpine'
-            distro_version = "$( $v.Major ).$( $v.Minor )"
+            distro_version = $v
             subvariants = @(
                 @{ components = @( 'curl', 'git', 'jq', 'ssh' ); tag_as_latest = if ($v -eq $global:VERSIONS.alpine.versions[0]) { $true } else { $false } }
                 if ( $v -ge [version]'3.20' ) {
@@ -31,6 +30,7 @@ $local:VARIANTS_MATRIX = @(
 $VARIANTS = @(
     foreach ($variant in $VARIANTS_MATRIX){
         foreach ($subVariant in $variant['subvariants']) {
+            $v = [version]$variant['distro_version']
             @{
                 # Metadata object
                 _metadata = @{
@@ -50,8 +50,8 @@ $VARIANTS = @(
                 }
                 # Docker image tag. E.g. '3.8-curl'
                 tag = @(
-                        $variant['distro_version']
-                        $subVariant['components'] | ? { $_ }
+                    "$( $v.Major ).$( $v.Minor )"
+                    $subVariant['components'] | ? { $_ }
                 ) -join '-'
                 tag_as_latest = if ( $subVariant.Contains('tag_as_latest') ) {
                                     $subVariant['tag_as_latest']
