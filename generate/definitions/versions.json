@@ -1,4 +1,15 @@
 {
+  "alpine": {
+    "versions": [
+      "3.24.4",
+      "3.20.10",
+      "3.17.10",
+      "3.15.11",
+      "3.12.12"
+    ],
+    "versionsChangeScope": "minor",
+    "versionsNewScript": "Invoke-WebRequest https://www.alpinelinux.org/releases.json | ConvertFrom-Json | % { $_.release_branches } | ? { $_.git_branch -ne 'master' } | % { $_.releases.version } | ? { $v = [version]$_; $v.Major -eq 3 -and $v.Minor -in 24,20,17,15,12 } | Sort-Object { [version]$_ } -Descending"
+  },
   "pingme": {
     "versions": [
       "0.2.7"
